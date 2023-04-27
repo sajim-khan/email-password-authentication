@@ -2,11 +2,10 @@ import { clear } from "localforage";
 import React from "react";
 
 const RegisterBs = () => {
-
-    const handleSubmit = (event) => { 
-        event.preventDefault();
-        console.log(event.target.email.value);
-    }
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log(event.target.email.value);
+  };
 
   return (
     <div className="w-50 mx-auto">
@@ -15,7 +14,7 @@ const RegisterBs = () => {
           <label className="form-label">Email address</label>
           <input
             type="email"
-            name='email'
+            name="email"
             className="form-control"
             id="exampleInputEmail1"
             aria-describedby="emailHelp"
@@ -25,7 +24,7 @@ const RegisterBs = () => {
           <label className="form-label">Password</label>
           <input
             type="password"
-            name='password'
+            name="password"
             className="form-control"
             id="exampleInputPassword1"
           />
