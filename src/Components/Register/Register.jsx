@@ -6,23 +6,41 @@ import app from "../../Firebase/firebase.config";
 const auth = getAuth(app);
 
 const Register = () => {
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const handleSubmit = (event) => {
     //1. prevent page refresh
     event.preventDefault();
+    setSuccess("");
+    setError("");
 
     //2. collect form data
     const email = event.target.email.value;
     const password = event.target.password.value;
     console.log(email, password);
 
+    //validate
+    if (!/(?=.*[A-Z])/.test(password)) {
+      setError("Please add at least one upper case");
+      return;
+    } else if (!/(?=.*[0-9].*[0-9])/.test(password)) {
+      setError("Please add at least two numbers");
+      return;
+    }
+
     //3. create user in firebase
     createUserWithEmailAndPassword(auth, email, password)
       .then((result) => {
         const loggedUser = result.user;
         console.log(loggedUser);
+        setError("");
+        event.target.reset();
+        setSuccess("User has been created successfully");
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error.message);
+        setError(error.message);
       });
   };
 
@@ -45,6 +63,7 @@ const Register = () => {
           type="email"
           name="email"
           placeholder="Enter Your Email"
+          required
         />
         <br />
         <input
@@ -53,10 +72,13 @@ const Register = () => {
           type="password"
           name="password"
           placeholder="Enter Your password"
+          required
         />
         <br />
         <input className="btn btn-primary" type="submit" value="Register" />
       </form>
+      <p className="text-danger">{error}</p>
+      <p className="text-gray">{success}</p>
     </div>
   );
 };
