@@ -1,4 +1,9 @@
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
+import app from "../../Firebase/firebase.config";
+import { Link } from "react-router-dom";
+
+const auth = getAuth(app);
 
 const Login = () => {
   const [error, setError] = useState("");
@@ -24,7 +29,27 @@ const Login = () => {
     } else if (!/(?=.*[!@#$%&*])/.test(password)) {
       setError("Please add at least one character");
       return;
+    } else if (password.length < 6) {
+      setError("Password should be 6 characters long");
+      return;
     }
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((result) => {
+        const loggedUser = result.user;
+        console.log(loggedUser);
+        //alert for verify
+        if (!loggedUser.emailVerified) {
+          alert("Please verify your email");
+        }
+
+        event.target.reset();
+        setSuccess("User Logged In successfully");
+      })
+      .catch((error) => {
+        //console.error(error.message);
+        setError(error.message);
+      });
   };
 
   return (
@@ -65,6 +90,9 @@ const Login = () => {
         <button type="submit" className="btn btn-primary">
           Submit
         </button>
+        <p>
+          New to this website? Please <Link to="/register">Register</Link>
+        </p>
         <p className="text-danger">{error}</p>
         <p className="text-success">{success}</p>
       </form>
