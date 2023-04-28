@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import "./Register.css";
-import { createUserWithEmailAndPassword, getAuth, sendEmailVerification } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  sendEmailVerification,
+  updateProfile,
+} from "firebase/auth";
 import app from "../../Firebase/firebase.config";
 import { Link } from "react-router-dom";
 
@@ -19,7 +24,8 @@ const Register = () => {
     //2. collect form data
     const email = event.target.email.value;
     const password = event.target.password.value;
-    console.log(email, password);
+    const name = event.target.name.value;
+    console.log(email, password, name);
 
     //validate
     if (!/(?=.*[A-Z])/.test(password)) {
@@ -38,24 +44,34 @@ const Register = () => {
         setError("");
         event.target.reset();
         setSuccess("User has been created successfully");
-        sendVerificationEmail(result.user)
+        sendVerificationEmail(result.user);
+        updateUserData(result.user, name);
       })
       .catch((error) => {
         console.error(error.message);
         setError(error.message);
       });
   };
-  
-  
+
   // email verification
-  const sendVerificationEmail = user => {
-    sendEmailVerification(user)
-    .then(result => {
+  const sendVerificationEmail = (user) => {
+    sendEmailVerification(user).then((result) => {
       console.log(result);
-      alert('Please verify your email address')
+      alert("Please verify your email address");
+    });
+  };
+
+  const updateUserData = (user, name) => {
+    updateProfile(user, {
+      displayName: name,
     })
-  }
-  
+      .then(() => {
+        console.log("User name updated successfully");
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
+  };
 
   const handleEmailChange = (event) => {
     //console.log(event.target.value);
@@ -70,6 +86,15 @@ const Register = () => {
     <div className="w-50 mx-auto">
       <h2>This is register page</h2>
       <form onSubmit={handleSubmit}>
+        <input
+          className="w-50"
+          onChange={handleEmailChange}
+          type="text"
+          name="name"
+          placeholder="Enter Your Name"
+          required
+        />
+        <br />
         <input
           className="w-50"
           onChange={handleEmailChange}
@@ -91,7 +116,7 @@ const Register = () => {
         <input className="btn btn-primary" type="submit" value="Register" />
       </form>
       <p>
-        Already have an account? Please <Link to='/login'>Login</Link>
+        Already have an account? Please <Link to="/login">Login</Link>
       </p>
       <p className="text-danger">{error}</p>
       <p className="text-gray">{success}</p>
